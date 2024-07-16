@@ -17,7 +17,7 @@ let listingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    img:{
+    image:{
         type: String,
         default: "https://unsplash.com/photos/a-person-climbing-up-the-side-of-a-large-rock-E76-vNiW3ps",
         set: (v)=> v===""?"https://unsplash.com/photos/a-person-climbing-up-the-side-of-a-large-rock-E76-vNiW3ps":v,
