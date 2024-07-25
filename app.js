@@ -7,6 +7,8 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const {listingSchema} = require("./utils/schema.js");
+const Review = require("./models/review.js");
+const {reviewSchema} = require("./utils/schema.js");
 const app = express();
 const port = 8080;
 
@@ -42,11 +44,22 @@ const validatelistings = (req, res, next) => {
     }
   };
 
+  const validateReview = (req, res, next) => {
+    let result = reviewSchema.validate(req.body);
+    if (result.error) {
+      throw new ExpressError(400, result.error);
+    } else {
+      next();
+    }
+  };
+
+// listing route or main route
 app.get("/listings", wrapAsync(async (req,res)=>{
     const allListings = await Listings.find({});
     res.render("listings/index.ejs", {allListings});
 }));
 
+//new route
 app.get("/listings/new", wrapAsync((req,res)=>{
     res.render("listings/new.ejs");
 }));
@@ -57,12 +70,13 @@ app.post("/listings", validatelistings, wrapAsync(async (req,res,next)=>{
         res.redirect("/listings");
 }));
 
+//show route
 app.get("/listings/:id", wrapAsync(async (req,res)=>{ 
     let {id} = req.params;
-    const listing = await Listings.findById(id);
+    const listing = await Listings.findById(id).populate("reviews");
     res.render("listings/show.ejs", {listing});
 }));
-
+//edit route
 app.get("/listings/:id/edit", wrapAsync(async (req,res)=>{
     let {id} = req.params;
     const listing = await Listings.findById(id);
@@ -75,10 +89,25 @@ app.put("/listings/:id", validatelistings, wrapAsync(async (req,res)=>{
     res.redirect(`/listings/${id}`);
 }));
 
+//delete route
 app.delete("/listing/:id",wrapAsync(async (req,res) =>{
     let {id} = req.params;
     await Listings.findByIdAndDelete(id);
     res.redirect("/listings");
+}));
+
+//reviews 
+//post route
+app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req,res)=>{
+    let listing = await Listings.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    res.redirect(`/listings/${listing._id}`);
 }));
 
 app.all("*", (req,res,next)=>{
