@@ -46,13 +46,16 @@
                 <div class="row ">
                     <% for(let review of listing.reviews){ %>
                         <div class="card col-5 ms-3 mb-3">
-                            <div class="card-body">
+                            <div class="card-body mb-3">
                                 <h5 class="card-title"><%= review.user%></h5>
                                 <p class="card-text"><%= review.comment %></p>
                                 <p class="card-text"><% for(let i = 0; i < review.rating; i++){ %>
                                     <i class="fa-solid fa-star star"></i>
                                 <%}%></p>
                             </div>
+                            <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                                <button class="btn btn-dark btn-sm">Delete</button>
+                            </form>
                         </div>
                     <% } %>
                 </div>
