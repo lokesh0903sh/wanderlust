@@ -67,18 +67,19 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req,res,next)=>{
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
+    res.locals.currUser = req.user;
     next();
 });
 
-app.get("/demoUser", async(req,res)=>{
-    let fakeUser = new User({
-        email: "student@gmail.com",
-        username: "student-delta",
-    });
+// app.get("/demoUser", async(req,res)=>{
+//     let fakeUser = new User({
+//         email: "student@gmail.com",
+//         username: "student-delta",
+//     });
 
-    let registeredUser = await User.register(fakeUser,"helloWorld");
-    res.send(registeredUser);
-});
+//     let registeredUser = await User.register(fakeUser,"helloWorld");
+//     res.send(registeredUser);
+// });
 
 app.use("/listings", ListingsRouter);
 app.use("/listings/:id/reviews", ReviewsRouter);
