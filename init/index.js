@@ -8,7 +8,7 @@ main().then(()=>{
 })
 
 async function main(){
-    await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
+    await mongoose.connect(process.env.ATLASDB_URL);
 }
 
 const initDB = async ()=>{
